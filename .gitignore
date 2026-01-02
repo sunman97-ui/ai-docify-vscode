@@ -25,3 +25,6 @@ Thumbs.db
 
 # --- Security (Just in case) ---
 .env
+
+# --- Gemini ---
+*GEMINI.md
