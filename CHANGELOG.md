@@ -1,9 +1,5 @@
-# Change Log
+# Change Log Ai Docify
 
-All notable changes to the "ai-docify-vscode" extension will be documented in this file.
+## Updates V 0.1.3
 
-Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
-
-## [Unreleased]
-
-- Initial release
+* `fixes premature dismissal of the progress UI before generation finishes.`

@@ -156,25 +156,34 @@ function fetchCliConfig(pythonPath: string, cwd: string): Promise<any> {
 function executeGeneration(pythonPath: string, filePath: string, provider: string, model: string, mode: string, outputDir: string, cwd: string, editor: vscode.TextEditor, document: vscode.TextDocument) {
     const args = ['-m', 'ai_docify', 'generate', filePath, '--provider', provider, '--model', model, '--mode', mode, '--yes', '--output-dir', outputDir];
 
-    vscode.window.withProgress({ location: vscode.ProgressLocation.Notification, title: `Generating docs (${mode})...` }, async () => {
-        const process = cp.spawn(pythonPath, args, { cwd: cwd });
-        process.on('close', async (code) => {
-            if (code === 0) {
-                const ext = path.extname(filePath);
-                const baseName = path.basename(filePath, ext);
-                const genFilePath = path.join(outputDir, `${baseName}.doc${ext}`);
-                
-                if (fs.existsSync(genFilePath)) {
-                    const newContent = fs.readFileSync(genFilePath, 'utf-8');
-                    const fullRange = new vscode.Range(document.positionAt(0), document.positionAt(document.getText().length));
-                    await editor.edit(editBuilder => editBuilder.replace(fullRange, newContent));
-                    vscode.window.showInformationMessage('Docs Generated!');
-                }
-            } else {
-                vscode.window.showErrorMessage('Generation failed. Check console for details.');
-            }
-        });
-    });
+    // Return a Promise from withProgress so the progress UI stays visible until the process completes
+    vscode.window.withProgress(
+        { location: vscode.ProgressLocation.Notification, title: `Generating docs (${mode})...`, cancellable: false },
+        () => {
+            return new Promise<void>((resolve) => {
+                const process = cp.spawn(pythonPath, args, { cwd: cwd });
+
+                process.on('close', async (code) => {
+                    if (code === 0) {
+                        const ext = path.extname(filePath);
+                        const baseName = path.basename(filePath, ext);
+                        const genFilePath = path.join(outputDir, `${baseName}.doc${ext}`);
+
+                        if (fs.existsSync(genFilePath)) {
+                            const newContent = fs.readFileSync(genFilePath, 'utf-8');
+                            const fullRange = new vscode.Range(document.positionAt(0), document.positionAt(document.getText().length));
+                            await editor.edit(editBuilder => editBuilder.replace(fullRange, newContent));
+                            vscode.window.showInformationMessage('Docs Generated!');
+                        }
+                    } else {
+                        vscode.window.showErrorMessage('Generation failed. Check console for details.');
+                    }
+                    resolve();
+                });
+            });
+        }
+    );
 }
+
 
 export function deactivate() {}
