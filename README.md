@@ -1,4 +1,5 @@
 [![VS Code Marketplace](https://img.shields.io/visual-studio-marketplace/v/sunman97-ui.ai-docify-vscode?style=flat&label=VS%20Code%20Marketplace&logo=visual-studio-code)](https://marketplace.visualstudio.com/items?itemName=sunman97-ui.ai-docify-vscode)
+
 # AI Docify for VS Code
 
 **AI Docify** is the intelligent documentation assistant for Python. It uses AST parsing to surgically inject NumPy/Sphinx docstrings into your code without breaking your logic.
