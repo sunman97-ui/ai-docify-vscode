@@ -1,18 +1,18 @@
 {
-  "name": "ai-docify-vscode",
+"name": "ai-docify-vscode",
   "displayName": "AI Docify",
+  "publisher": "sunman97-ui",    
   "description": "AI Documentation Generator",
-  "version": "0.1.0",
+  "icon": "icon.png",
+  "version": "0.1.1",
   "author": {
     "name": "John Spencer",
-    "email": "johnspencer97@live.co.uk",
-    "publisher": "sunman97-ui"
+    "email": "johnspencer97@live.co.uk"
   },
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/sunman97-ui/ai-docify-vscode",
-    "icon": "icon.png"
+    "url": "https://github.com/sunman97-ui/ai-docify-vscode"
   },
   "engines": {
   "vscode": "^1.90.0"
