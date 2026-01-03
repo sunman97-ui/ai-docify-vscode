@@ -13,6 +13,8 @@
 * **🧠 Dual AI Support:**
   * **OpenAI:** For high-precision, production-grade docs.
   * **Ollama:** For free, local, privacy-focused generation.
+* **🎯 Per-Function Generation**: Use the "lightbulb" icon on any `def` line to document a single function instantly.
+* **👁️ Status Bar Visibility**: See the active AI provider and generation status at a glance in the VS Code status bar.
 * **⚡ Two Modes:**
   * **Inject:** Safe insertion (preserves formatting).
   * **Rewrite:** Full file refactor (good for legacy code).
@@ -35,13 +37,31 @@ Go to **Settings** (`Ctrl+,`) and search for `aiDocify`.
 * **Python Path:** If you use a virtual environment, set this to your specific python executable (e.g., `${workspaceFolder}/.venv/bin/python`).
 * **Default Provider:** Choose `openai` or `ollama`.
 
-### 3. Usage
+### 📖 Usage
 
-1. Open any Python file.
-2. Press `Ctrl+Shift+P` (Command Palette).
-3. Type **"AI Docify: Document Current File"**.
-4. Select your Provider, Model, and Mode.
-5. Confirm the cost estimate.
+There are two primary ways to use AI Docify:
+
+### 1. Documenting a Single Function (Recommended Workflow)
+
+This is the fastest and most common way to use the extension.
+
+1.  Open any Python file.
+2.  Click on a line containing a function definition (e.g., `def my_function():`).
+3.  A **lightbulb icon** (💡) will appear. Click it.
+4.  Select **"AI Docify: Document this function"** from the menu.
+5.  Choose your AI Provider and Model, then confirm the cost estimate. The docstring will be generated and inserted for that function only.
+
+### 2. Documenting an Entire File
+
+This is useful for documenting legacy files or generating a first pass on a new module.
+
+1.  Open the Python file you want to document.
+2.  Press `Ctrl+Shift+P` (or `Cmd+Shift+P` on Mac) to open the Command Palette.
+3.  Type and select **"AI Docify: Document Current File"**.
+4.  You will be prompted to choose a `mode`:
+    *   **`inject` (Recommended):** Safely inserts docstrings without changing any of your code.
+    *   **`rewrite`:** Rewrites the entire file with docstrings included.
+5.  Select your Provider and Model, then confirm the cost estimate.
 
 ## ⚙️ Extension Settings
 
