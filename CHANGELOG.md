@@ -1,5 +1,11 @@
 # Change Log Ai Docify
 
+## [0.2.1]
+
+### Fixed
+
+- Restored the ability to choose between `rewrite` and `inject` modes for whole-file documentation.
+
 ## [0.2.0]
 
 ### Added

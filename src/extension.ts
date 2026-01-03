@@ -117,7 +117,7 @@ async function runGeneration(options: { filePath: string; functionName?: string 
         const docUri = vscode.Uri.file(filePath);
         const document = await vscode.workspace.openTextDocument(docUri);
 
-        // Fetch config, model, provider, and mode from user
+        // Fetch config, model, provider from user
         const configOutput = await runCliCommand(pythonPath, ['-m', 'ai_docify', 'config'], cwd);
         const configData = JSON.parse(configOutput);
         
@@ -132,26 +132,45 @@ async function runGeneration(options: { filePath: string; functionName?: string 
         models.sort((x, y) => (x === defaultModel ? -1 : y === defaultModel ? 1 : 0));
         const modelChoice = await vscode.window.showQuickPick(models, { placeHolder: `Select Model for ${providerChoice}` });
         if (!modelChoice) throw new Error('Model selection cancelled.');
+
+        // Determine mode: Implicit for function, choice for file
+        let mode: string;
+        if (functionName) {
+            mode = 'inject';
+        } else {
+            const modeChoice = await vscode.window.showQuickPick(
+                [
+                    { label: 'inject', description: 'Surgically inserts docstrings without changing code.' },
+                    { label: 'rewrite', description: 'Rewrites the entire file to include documentation.' }
+                ],
+                { placeHolder: 'Select Documentation Mode (we recommend "inject")' }
+            );
+            if (!modeChoice) {
+                throw new Error('Mode selection cancelled.');
+            }
+            mode = modeChoice.label;
+        }
         
         // Build args for cost estimation
-        const estimateArgs = ['-m', 'ai_docify', 'generate', filePath, '--provider', providerChoice, '--model', modelChoice, '--check'];
+        const estimateArgs = ['-m', 'ai_docify', 'generate', filePath, '--provider', providerChoice, '--model', modelChoice, '--check', '--mode', mode];
         if (functionName) {
             estimateArgs.push('--function', functionName);
         }
 
         const costOutput = await runCliCommand(pythonPath, estimateArgs, cwd);
         const costData = JSON.parse(costOutput);
-        const mode = functionName ? 'inject' : 'rewrite'; // Mode is implied
+        
+        const contextMsg = functionName ? `function "${functionName}"` : `file (${mode} mode)`;
         const msg = costData.currency === 'USD'
             ? `Tokens: ${costData.tokens}. Est. Cost: $${costData.input_cost.toFixed(5)}`
             : `Tokens: ${costData.tokens}. Cost: Free (Local)`;
 
-        const userSelection = await vscode.window.showInformationMessage(`AI Docify (${functionName || 'file'}): ${msg}`, { modal: true }, "Proceed", "Cancel");
+        const userSelection = await vscode.window.showInformationMessage(`AI Docify (${contextMsg}): ${msg}`, { modal: true }, "Proceed", "Cancel");
         if (userSelection !== 'Proceed') throw new Error('Operation cancelled by user.');
 
         // Build args for generation
         const outputDir = path.join(cwd, 'ai_output');
-        const genArgs = ['-m', 'ai_docify', 'generate', filePath, '--provider', providerChoice, '--model', modelChoice, '--yes', '--output-dir', outputDir];
+        const genArgs = ['-m', 'ai_docify', 'generate', filePath, '--provider', providerChoice, '--model', modelChoice, '--yes', '--output-dir', outputDir, '--mode', mode];
         if (functionName) {
             genArgs.push('--function', functionName);
         }
